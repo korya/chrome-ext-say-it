@@ -1,12 +1,12 @@
 // popup.js
 import { loadSettings, saveSettings } from './settings.js';
 import { extractTextFromPage } from '../scripts/textExtraction.js';
-import { synthesizeWithElevenLabs } from '../scripts/ttsServices.js';
+import { synthesizeWithElevenLabsStreaming } from '../scripts/ttsServices.js';
 import {
-  playAudioFromArrayBuffer,
+  playAudioStream,
+  stopAudioStream,
   pauseAudio,
   resumeAudio,
-  stopAudio,
   isPlaying,
   isPaused
 } from '../scripts/audioPlayer.js';
@@ -50,6 +50,7 @@ async function onPlayClicked() {
     console.log('+++ onPlayClicked: getting current tab');
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
     console.log('+++ onPlayClicked: extracting text');
+    // 1. Get text from page
     const extractedText = await chrome.scripting.executeScript({
       target: { tabId: tab.id },
       func: extractTextFromPage,
@@ -58,19 +59,17 @@ async function onPlayClicked() {
     console.log('+++ onPlayClicked: got extracted text', extractedText);
     if (extractedText && extractedText[0] && extractedText[0].result) {
       let textToRead = extractedText[0].result.trim();
-      // XXX No streaming supported yet
-      textToRead = textToRead.substring(0, 1000);
       console.log('+++ onPlayClicked: synthesizing audio');
-      const arrayBuffer = await synthesizeWithElevenLabs(
+      // 2. Get streaming TTS
+      const response = await synthesizeWithElevenLabsStreaming(
         currentSettings.apiKey,
         textToRead,
         currentSettings.voice,
-        currentSettings.speed,
       );
 
       console.log('+++ onPlayClicked: playing audio');
-      // For actual speed changes, you can set the audio element playbackRate.
-      playAudioFromArrayBuffer(arrayBuffer, parseFloat(currentSettings.speed));
+      // 3. Start playing the streaming audio
+      playAudioStream(response, parseFloat(currentSettings.speed));
     }
   } catch (error) {
     console.error('Failed to read page or TTS:', error);
@@ -95,7 +94,7 @@ function onResumeClicked() {
 
 function onStopClicked() {
   console.log('+++ onStopClicked: stopping audio');
-  stopAudio();
+  stopAudioStream();
   toggleButtons({ stopped: true });
 }
 
