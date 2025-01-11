@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>TTS Reader</title>
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <div id="controls">
+      <!-- Primary controls for reading -->
+      <button id="playBtn">Play</button>
+      <button id="pauseBtn" style="display: none;">Pause</button>
+      <button id="resumeBtn" style="display: none;">Resume</button>
+      <button id="stopBtn" style="display: none;">Stop</button>
+    </div>
+
+    <hr />
+
+    <div id="settings">
+      <h3>Settings</h3>
+      <label for="apiKeyInput">API Key:</label>
+      <input type="text" id="apiKeyInput" placeholder="Enter your TTS API key" />
+
+      <label for="voiceSelect">Voice:</label>
+      <select id="voiceSelect">
+        <option value="XrExE9yKIg1WjnnlVkGX" default>Female</option>
+        <option value="bIHbv24MWmeRgasZH58o">Male</option>
+        <!-- Add more or dynamically populate from TTS service -->
+      </select>
+
+      <label for="speedSelect">Playback Speed:</label>
+      <select id="speedSelect">
+        <!-- Example speeds, can be changed as you like -->
+        <option value="0.5">0.5</option>
+        <option value="0.75">0.75</option>
+        <option value="0.9">0.9</option>
+        <option value="1" selected>1.0</option>
+        <option value="1.1">1.1</option>
+        <option value="1.25">1.25</option>
+        <option value="1.5">1.5</option>
+        <option value="1.7">1.7</option>
+        <option value="2">2.0</option>
+      </select>
+    </div>
+
+    <script type="module" src="settings.js"></script>
+    <script type="module" src="popup.js"></script>
+  </body>
+</html>
